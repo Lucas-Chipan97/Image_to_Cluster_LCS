@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-packer
+  labels:
+    app: nginx-packer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-packer
+  template:
+    metadata:
+      labels:
+        app: nginx-packer
+      namespace: {{ namespace }}
+      labels:
+        app: nginx-packer
+    spec:
+      containers:
+        - name: nginx
+          image: {{ image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80

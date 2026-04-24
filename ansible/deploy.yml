@@ -1,0 +1,28 @@
+- name: Deploy Nginx (Packer-built) to K3d via Ansible
+  hosts: local
+  gather_facts: false
+  vars:
+    namespace: demo
+    image: "k3d-registry.localhost:5000/nginx-packer:1.0.0"
+
+  tasks:
+    - name: Ensure namespace exists
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: "{{ namespace }}"
+
+    - name: Apply Deployment
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ namespace }}"
+        definition: "{{ lookup('template', 'k8s/deployment.yml.j2') }}"
+
+    - name: Apply Service
+      kubernetes.core.k8s:
+        state: present
+        namespace: "{{ namespace }}"
+        definition: "{{ lookup('template', 'k8s/service.yml.j2') }}"
